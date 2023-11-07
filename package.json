@@ -2,7 +2,7 @@
   "name": "instock-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "db:migrate": "knex migrate:latest",
     "db:seed": "knex seed:run"

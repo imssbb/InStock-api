@@ -9,7 +9,7 @@ require("dotenv").config();
 
 app.use(cors());
 app.use("/warehouses", warehouseRoutes);
-app.use("/inventory", inventoryRoutes);
+app.use("/inventories", inventoryRoutes);
 
 const PORT = process.env.PORT || 5050;
 
