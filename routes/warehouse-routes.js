@@ -1,14 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const knex = require("knex")(require("../knexfile"));
+const router = require('express').Router();
 
-router.get("/", async (_req, res) => {
-  try {
-    const data = await knex("warehouses");
-    res.json(data);
-  } catch (err) {
-    res.status(400).send(`Error retreiving posts: ${err}`);
-  }
-});
+const useController = require('../controllers/warehouse-controller');
+
+router.route('/').get(useController.index);
+router.route('/:id').get(useController.findOne);
 
 module.exports = router;
