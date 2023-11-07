@@ -1,11 +1,10 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+require("dotenv").config();
 
 const warehouseRoutes = require("./routes/warehouse-routes");
 const inventoryRoutes = require("./routes/inventory-routes");
-
-require("dotenv").config();
 
 app.use(cors());
 app.use("/warehouses", warehouseRoutes);

@@ -1,5 +1,6 @@
+const express = require("express");
+const router = express.Router();
 const knex = require("knex")(require("../knexfile"));
-const router = require("express").Router();
 
 router.get("/", async (_req, res) => {
   try {
@@ -9,3 +10,5 @@ router.get("/", async (_req, res) => {
     res.status(400).send(`Error retreiving posts: ${err}`);
   }
 });
+
+module.exports = router;
