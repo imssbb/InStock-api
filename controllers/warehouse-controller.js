@@ -65,8 +65,6 @@ const add = async (req, res) => {
   }
   try {
     const result = await knex('warehouses').insert(req.body);
-    // console.log('req.body:', req.body);
-
     const newWarehouseId = result[0];
     const createWarehouse = await knex('warehouses').where({
       id: newWarehouseId,

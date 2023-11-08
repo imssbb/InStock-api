@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "node --watch server.js",
     "db:migrate": "knex migrate:latest",
     "db:seed": "knex seed:run"
   },
