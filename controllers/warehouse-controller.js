@@ -107,20 +107,22 @@ const update = async (req, res) => {
   }
 
   try {
-    const result = await knex('warehouses').insert(req.body);
-    const newWarehouseId = result[0];
-    const createWarehouse = await knex('warehouses').where({
-      id: newWarehouseId,
-    });
-    res.status(201).json(createWarehouse);
-  } catch (err) {
-    res.status(500).json({
-      message: `Unable to delete warehouse: ${err}`,
-    });
-  }
-};
+    const warehouseUpdated = await knex('warehouses')
+      .where({ id: req.params.id })
+      .update(req.body);
 
-//Put/Edit Warehouse
+    if (warehouseUpdated === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${req.params.id} not found`,
+      });
+    }
+
+    const updateWarehouse = await knex('warehouses').where({
+      id: req.params.id,
+    });
+    res.status(200).json(updateWarehouse[0]);
+  } catch (err) {}
+};
 
 // Delete Warehouse
 
