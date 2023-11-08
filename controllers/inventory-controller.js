@@ -31,7 +31,7 @@ const findOne = async (req, res) => {
 const add = async (req, res) => {
   if (
     //works without warehouse_id: null atm; need to check if warehouse_id exists
-    // !req.body.warehouse_id ||
+    !req.body.warehouse_id ||
     !req.body.item_name ||
     !req.body.description ||
     !req.body.category ||
@@ -42,13 +42,16 @@ const add = async (req, res) => {
       message: `Please provide all information for the inventory in the request`,
     });
   }
+
   try {
     const result = await knex("inventories").insert(req.body);
 
     const newInventoryId = result[0];
-    const createdInventory = await knex("inventories").where({
-      id: newInventoryId,
-    });
+    const createdInventory = await knex("inventories")
+      .where({
+        id: newInventoryId,
+      })
+      .first();
     res.status(201).json(createdInventory);
   } catch (error) {
     res
