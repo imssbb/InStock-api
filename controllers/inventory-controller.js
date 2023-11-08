@@ -28,7 +28,83 @@ const findOne = async (req, res) => {
   }
 };
 
+const add = async (req, res) => {
+  if (
+    //works without warehouse_id: null atm; need to check if warehouse_id exists
+    // !req.body.warehouse_id ||
+    !req.body.item_name ||
+    !req.body.description ||
+    !req.body.category ||
+    !req.body.status ||
+    !req.body.quantity
+  ) {
+    return res.status(400).json({
+      message: `Please provide all information for the inventory in the request`,
+    });
+  }
+  try {
+    const result = await knex("inventories").insert(req.body);
+
+    const newInventoryId = result[0];
+    const createdInventory = await knex("inventories").where({
+      id: newInventoryId,
+    });
+    res.status(201).json(createdInventory);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: `Unable to create new inventory: ${error}` });
+  }
+};
+
+const update = async (req, res) => {
+  try {
+    //for all fields?
+    const inventoryUpdate = await knex("inventories")
+      .where({ id: req.params.id })
+      .update(req.body);
+    if (inventoryUpdate === 0) {
+      return res.status(404).json({
+        message: `Inventory with ID ${req.params.id} not found`,
+      });
+    }
+
+    const updatedInventory = await knex("inventories").where({
+      id: req.params.id,
+    });
+
+    res.status(200).json(updatedInventory[0]);
+  } catch (error) {
+    res.status(400).json({
+      message: `Unable to update inventory: ${error}`,
+    });
+  }
+};
+
+const remove = async (req, res) => {
+  try {
+    const inventoryDeleted = await knex("inventories")
+      .where({ id: req.params.id })
+      .delete();
+
+    if (inventoryDeleted === 0) {
+      return res
+        .status(404)
+        .json({ message: `Inventory with ID ${req.params.id} not found` });
+    }
+
+    res.sendStatus(204); //No Content response
+  } catch (error) {
+    res.status(400).json({
+      message: `Unable to delete inventory: ${error}`,
+    });
+  }
+};
+
 module.exports = {
   index,
   findOne,
+  add,
+  update,
+  remove,
 };

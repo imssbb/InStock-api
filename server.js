@@ -7,6 +7,7 @@ const warehouseRoutes = require("./routes/warehouse-routes");
 const inventoryRoutes = require("./routes/inventory-routes");
 
 app.use(cors());
+app.use(express.json()); //need this middleware in order to add objects as a json
 app.use("/warehouses", warehouseRoutes);
 app.use("/inventories", inventoryRoutes);
 
