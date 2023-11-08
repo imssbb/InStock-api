@@ -38,6 +38,8 @@ function isValidEmail(email) {
 }
 
 function isValidPhoneNumber(phoneNumber) {
+  // Use the isMobilePhone function with specific locale and strictMode settings
+  return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
   return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
 }
 
@@ -105,22 +107,20 @@ const update = async (req, res) => {
   }
 
   try {
-    const warehouseUpdated = await knex('warehouses')
-      .where({ id: req.params.id })
-      .update(req.body);
-
-    if (warehouseUpdated === 0) {
-      return res.status(404).json({
-        message: `Warehouse with ID ${req.params.id} not found`,
-      });
-    }
-
-    const updateWarehouse = await knex('warehouses').where({
-      id: req.params.id,
+    const result = await knex('warehouses').insert(req.body);
+    const newWarehouseId = result[0];
+    const createWarehouse = await knex('warehouses').where({
+      id: newWarehouseId,
     });
-    res.status(200).json(updateWarehouse[0]);
-  } catch (err) {}
+    res.status(201).json(createWarehouse);
+  } catch (err) {
+    res.status(500).json({
+      message: `Unable to delete warehouse: ${err}`,
+    });
+  }
 };
+
+//Put/Edit Warehouse
 
 // Delete Warehouse
 
