@@ -1,8 +1,8 @@
-const knex = require('knex')(require('../knexfile'));
+const knex = require("knex")(require("../knexfile"));
 
 const index = async (_req, res) => {
   try {
-    const data = await knex('inventories');
+    const data = await knex("inventories");
     res.json(data);
   } catch (err) {
     res.status(400).send(`Error retreiving Inventories: ${err}`);
@@ -11,7 +11,7 @@ const index = async (_req, res) => {
 
 const findOne = async (req, res) => {
   try {
-    const data = await knex('inventories').where({
+    const data = await knex("inventories").where({
       id: req.params.id,
     }); //getting users from database with id
     if (data.length === 0) {
@@ -30,7 +30,6 @@ const findOne = async (req, res) => {
 
 const add = async (req, res) => {
   if (
-    //works without warehouse_id: null atm; need to check if warehouse_id exists
     !req.body.warehouse_id ||
     !req.body.item_name ||
     !req.body.description ||
@@ -42,31 +41,29 @@ const add = async (req, res) => {
       message: `Please provide all information for the inventory in the request`,
     });
   }
+
+  const warehouse_id = req.body.warehouse_id;
+  const existingWarehouse = await knex("inventories")
+    .where({ warehouse_id })
+    .first();
+  if (!existingWarehouse) {
+    return res.status(400).send("Warehouse not found.");
+  }
+
+  if (isNaN(req.body.quantity)) {
+    return res.status(400).send("Invalid. Quantity must be a number.");
+  }
+
   try {
-    // const warehouseId = req.body.warehouse_id;
-    // Assuming you pass warehouse_id in the request body
-
-    // const existingWarehouse = await knex('warehouses').where({
-    //   id: warehouseId,
-    // });
-    // if (!warehouseId) {
-    //   return res
-    //     .status(404)
-    //     .json({ message: `Warehouse with ID ${warehouseId} not found.` });
-    // }
-
-    const result = await knex('inventories').insert(req.body);
-    //INSERT INTO inventories VALUES(12,23,321,312,'name') sorta thing
+    const result = await knex("inventories").insert(req.body);
 
     const newInventoryId = result[0]; //get the id of the inventory item we just created
-    const createdInventory = await knex('inventories')
+    const createdInventory = await knex("inventories")
       .where({
         id: newInventoryId,
       })
-      .first(); // WHAT WAS THE OTHER WAY? WHAT IS THE RESULT[0] DOING?
-    //SELECT * FROM inventories where id=newIntoryItem.id kinda thing
+      .first();
     res.status(201).json(createdInventory);
-    // res.sendStatus(201);
   } catch (error) {
     res
       .status(400)
@@ -75,9 +72,35 @@ const add = async (req, res) => {
 };
 
 const update = async (req, res) => {
+  if (
+    !req.body.warehouse_id ||
+    !req.body.item_name ||
+    !req.body.description ||
+    !req.body.category ||
+    !req.body.status ||
+    !req.body.quantity
+  ) {
+    return res.status(400).json({
+      message: `Please provide all information for the inventory in the request`,
+    });
+  }
+
+  //error code - if warehouse not found
+  const warehouse_id = req.body.warehouse_id;
+  const existingWarehouse = await knex("warehouses")
+    .where({ id: warehouse_id })
+    .first();
+  if (!existingWarehouse) {
+    return res.status(400).send(`Warehouse ${warehouse_id} not found.`);
+  }
+
+  //error code - if quantity is not a number
+  if (isNaN(req.body.quantity)) {
+    return res.status(400).send("Invalid. Quantity must be a number.");
+  }
+
   try {
-    //for all fields?
-    const inventoryUpdate = await knex('inventories')
+    const inventoryUpdate = await knex("inventories")
       .where({ id: req.params.id })
       .update(req.body);
     if (inventoryUpdate === 0) {
@@ -86,10 +109,9 @@ const update = async (req, res) => {
       });
     }
 
-    const updatedInventory = await knex('inventories').where({
+    const updatedInventory = await knex("inventories").where({
       id: req.params.id,
     });
-
     res.status(200).json(updatedInventory[0]);
   } catch (error) {
     res.status(400).json({
@@ -100,7 +122,7 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    const inventoryDeleted = await knex('inventories')
+    const inventoryDeleted = await knex("inventories")
       .where({ id: req.params.id })
       .delete();
 

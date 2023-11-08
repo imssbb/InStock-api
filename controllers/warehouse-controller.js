@@ -1,10 +1,10 @@
-const knex = require('knex')(require('../knexfile'));
-const validator = require('validator');
+const knex = require("knex")(require("../knexfile"));
+const validator = require("validator");
 
 // Get All Warehouse Information
 const index = async (_req, res) => {
   try {
-    const data = await knex('warehouses');
+    const data = await knex("warehouses");
     res.json(data);
   } catch (err) {
     res.status(400).send(`Error retreiving Warehouses: ${err}`);
@@ -14,7 +14,7 @@ const index = async (_req, res) => {
 // Get Single Warehouse Information
 const findOne = async (req, res) => {
   try {
-    const data = await knex('warehouses').where({ id: req.params.id });
+    const data = await knex("warehouses").where({ id: req.params.id });
 
     if (data.length === 0) {
       return res
@@ -39,7 +39,7 @@ function isValidEmail(email) {
 
 function isValidPhoneNumber(phoneNumber) {
   // Use the isMobilePhone function with specific locale and strictMode settings
-  return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
+  return validator.isMobilePhone(phoneNumber, "en-US", { strictMode: false });
 }
 
 const add = async (req, res) => {
@@ -52,21 +52,21 @@ const add = async (req, res) => {
     !req.body.contact_email
   ) {
     return res.status(400).json({
-      message: 'Unsuccessful. Please provide missing information',
+      message: "Unsuccessful. Please provide missing information",
     });
   }
 
   if (!isValidEmail(req.body.contact_email)) {
-    return res.status(400).json({ message: 'Invalid email address' });
+    return res.status(400).json({ message: "Invalid email address" });
   }
 
   if (!isValidPhoneNumber(req.body.contact_phone)) {
-    return res.status(400).json({ message: 'Invalid phone number' });
+    return res.status(400).json({ message: "Invalid phone number" });
   }
   try {
-    const result = await knex('warehouses').insert(req.body);
+    const result = await knex("warehouses").insert(req.body);
     const newWarehouseId = result[0];
-    const createWarehouse = await knex('warehouses').where({
+    const createWarehouse = await knex("warehouses").where({
       id: newWarehouseId,
     });
     res.status(201).json(createWarehouse);
