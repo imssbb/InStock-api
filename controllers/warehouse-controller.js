@@ -38,7 +38,6 @@ function isValidEmail(email) {
 }
 
 function isValidPhoneNumber(phoneNumber) {
-  // Use the isMobilePhone function with specific locale and strictMode settings
   return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
 }
 
@@ -49,6 +48,8 @@ const add = async (req, res) => {
     !req.body.city ||
     !req.body.country ||
     !req.body.contact_name ||
+    !req.body.contact_position ||
+    !req.body.contact_phone ||
     !req.body.contact_email
   ) {
     return res.status(400).json({
@@ -79,6 +80,67 @@ const add = async (req, res) => {
 
 //Put/Edit Warehouse
 
+const update = async (req, res) => {
+  if (
+    !req.body.warehouse_name ||
+    !req.body.address ||
+    !req.body.city ||
+    !req.body.country ||
+    !req.body.contact_name ||
+    !req.body.contact_position ||
+    !req.body.contact_phone ||
+    !req.body.contact_email
+  ) {
+    return res.status(400).json({
+      message: 'Unsuccessful. Please provide missing information',
+    });
+  }
+
+  if (!isValidEmail(req.body.contact_email)) {
+    return res.status(400).json({ message: 'Invalid email address' });
+  }
+
+  if (!isValidPhoneNumber(req.body.contact_phone)) {
+    return res.status(400).json({ message: 'Invalid phone number' });
+  }
+
+  try {
+    const warehouseUpdated = await knex('warehouses')
+      .where({ id: req.params.id })
+      .update(req.body);
+
+    if (warehouseUpdated === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${req.params.id} not found`,
+      });
+    }
+
+    const updateWarehouse = await knex('warehouses').where({
+      id: req.params.id,
+    });
+    res.status(200).json(updateWarehouse[0]);
+  } catch (err) {}
+};
+
 // Delete Warehouse
 
-module.exports = { index, findOne, add };
+const remove = async (req, res) => {
+  try {
+    const warehouseDeleted = await knex('warehouses')
+      .where({ id: req.params.id })
+      .delete();
+
+    if (warehouseDeleted === 0) {
+      return res
+        .status(404)
+        .json({ message: `Warehouse with ID ${req.params.id} not found` });
+    }
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(500).json({
+      message: `Unable to delete warehouse: ${err}`,
+    });
+  }
+};
+
+module.exports = { index, findOne, add, update, remove };
