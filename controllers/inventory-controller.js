@@ -1,5 +1,6 @@
 const knex = require("knex")(require("../knexfile"));
 
+// Get All Inventories Information
 const index = async (_req, res) => {
   try {
     const data = await knex("inventories");
@@ -9,6 +10,7 @@ const index = async (_req, res) => {
   }
 };
 
+// Get Single Inventories Information
 const findOne = async (req, res) => {
   try {
     const data = await knex("inventories").where({
@@ -28,6 +30,7 @@ const findOne = async (req, res) => {
   }
 };
 
+// Post/Create New Inventory
 const add = async (req, res) => {
   if (
     !req.body.warehouse_id ||
@@ -56,7 +59,6 @@ const add = async (req, res) => {
 
   try {
     const result = await knex("inventories").insert(req.body);
-
     const newInventoryId = result[0]; //get the id of the inventory item we just created
     const createdInventory = await knex("inventories")
       .where({
@@ -71,6 +73,7 @@ const add = async (req, res) => {
   }
 };
 
+//Put/Edit Inventory
 const update = async (req, res) => {
   if (
     !req.body.warehouse_id ||
@@ -120,6 +123,7 @@ const update = async (req, res) => {
   }
 };
 
+// Delete Inventory
 const remove = async (req, res) => {
   try {
     const inventoryDeleted = await knex("inventories")
