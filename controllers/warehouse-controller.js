@@ -37,9 +37,17 @@ function isValidEmail(email) {
   return validator.isEmail(email);
 }
 
+// function isValidPhoneNumber(phoneNumber) {
+//   const numericPhoneNumber = phoneNumber.replace(/\D/g, '');
+//   return validator.isMobilePhone(numericPhoneNumber, 'en-US', {
+//     strictMode: false,
+//   });
+// }
+
 function isValidPhoneNumber(phoneNumber) {
-  // Use the isMobilePhone function with specific locale and strictMode settings
-  return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
+  const phoneRegex =
+    /^\+?(\d{1,4})?[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}$/;
+  return phoneRegex.test(phoneNumber);
 }
 
 const add = async (req, res) => {
