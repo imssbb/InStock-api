@@ -9,4 +9,6 @@ router
   .put(useController.update)
   .delete(useController.remove);
 
+router.route('/:id/inventories').get(useController.inventories);
+
 module.exports = router;
