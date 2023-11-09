@@ -40,7 +40,6 @@ function isValidEmail(email) {
 function isValidPhoneNumber(phoneNumber) {
   // Use the isMobilePhone function with specific locale and strictMode settings
   return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
-  return validator.isMobilePhone(phoneNumber, 'en-US', { strictMode: false });
 }
 
 const add = async (req, res) => {
@@ -145,4 +144,17 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { index, findOne, add, update, remove };
+// Get Inventories for a Given Warehouse
+
+const inventories = async (req, res) => {
+  try {
+    const inventories = await knex('warehouses')
+      .join('inventories', 'inventories.warehouse_id', 'warehouses.id')
+      .where({ warehouse_id: req.params.id });
+    res.json(inventories);
+  } catch (err) {
+    res.json(err);
+  }
+};
+
+module.exports = { index, findOne, add, update, remove, inventories };
