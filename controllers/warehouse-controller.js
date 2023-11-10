@@ -33,19 +33,15 @@ const findOne = async (req, res) => {
 // Post/Create New Warehouse
 
 function isValidEmail(email) {
-  //   return va.includes('@'); // For a basic example, let's check if the email contains an @ symbol
   return validator.isEmail(email);
 }
 
 function isValidPhoneNumber(phoneNumber) {
-  // Define regular expressions for allowed formats
   const formats = [
     /^\+\d{1,4}\s?\(\d{3}\)\s?\d{3}-\d{4}$/,
     /^1\s?\d{3}\s?\d{3}\s?\d{4}$/,
     /^\d{3}\s?\d{3}\s?\d{4}$/,
   ];
-
-  // Check if the phoneNumber matches any of the allowed formats
   return formats.some((format) => format.test(phoneNumber));
 }
 
