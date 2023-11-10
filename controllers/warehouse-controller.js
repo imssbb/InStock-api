@@ -37,17 +37,16 @@ function isValidEmail(email) {
   return validator.isEmail(email);
 }
 
-// function isValidPhoneNumber(phoneNumber) {
-//   const numericPhoneNumber = phoneNumber.replace(/\D/g, '');
-//   return validator.isMobilePhone(numericPhoneNumber, 'en-US', {
-//     strictMode: false,
-//   });
-// }
-
 function isValidPhoneNumber(phoneNumber) {
-  const phoneRegex =
-    /^\+?(\d{1,4})?[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}$/;
-  return phoneRegex.test(phoneNumber);
+  // Define regular expressions for allowed formats
+  const formats = [
+    /^\+\d{1,4}\s?\(\d{3}\)\s?\d{3}-\d{4}$/,
+    /^1\s?\d{3}\s?\d{3}\s?\d{4}$/,
+    /^\d{3}\s?\d{3}\s?\d{4}$/,
+  ];
+
+  // Check if the phoneNumber matches any of the allowed formats
+  return formats.some((format) => format.test(phoneNumber));
 }
 
 const add = async (req, res) => {
@@ -61,6 +60,16 @@ const add = async (req, res) => {
     !req.body.contact_phone ||
     !req.body.contact_email
   ) {
+    console.log('Missing information:', {
+      warehouse_name: req.body.warehouse_name,
+      address: req.body.address,
+      city: req.body.city,
+      country: req.body.country,
+      contact_name: req.body.contact_name,
+      contact_position: req.body.contact_position,
+      contact_phone: req.body.contact_phone,
+      contact_email: req.body.contact_email,
+    });
     return res.status(400).json({
       message: 'Unsuccessful. Please provide missing information',
     });
@@ -73,6 +82,7 @@ const add = async (req, res) => {
   if (!isValidPhoneNumber(req.body.contact_phone)) {
     return res.status(400).json({ message: 'Invalid phone number' });
   }
+
   try {
     const result = await knex('warehouses').insert(req.body);
     const newWarehouseId = result[0];
