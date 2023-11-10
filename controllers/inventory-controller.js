@@ -80,9 +80,18 @@ const update = async (req, res) => {
     !req.body.item_name ||
     !req.body.description ||
     !req.body.category ||
-    !req.body.status ||
-    !req.body.quantity
+    !req.body.status
+    // !req.body.quantity
   ) {
+    console.log("Missing info: ", {
+      warehouse_id: req.body.warehouse_id,
+      item_name: req.body.item_name,
+      description: req.body.description,
+      category: req.body.category,
+      status: req.body.status,
+      quantity: req.body.quantity,
+    });
+
     return res.status(400).json({
       message: `Please provide all information for the inventory in the request`,
     });
@@ -95,11 +104,6 @@ const update = async (req, res) => {
     .first();
   if (!existingWarehouse) {
     return res.status(400).send(`Warehouse ${warehouse_id} not found.`);
-  }
-
-  //error code - if quantity is not a number
-  if (isNaN(req.body.quantity)) {
-    return res.status(400).send("Invalid. Quantity must be a number.");
   }
 
   try {
