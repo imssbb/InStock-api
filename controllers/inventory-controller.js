@@ -1,5 +1,6 @@
 const knex = require("knex")(require("../knexfile"));
 
+// Get All Inventories Information
 const index = async (_req, res) => {
   try {
     const data = await knex("inventories");
@@ -9,6 +10,7 @@ const index = async (_req, res) => {
   }
 };
 
+// Get Single Inventories Information
 const findOne = async (req, res) => {
   try {
     const data = await knex("inventories").where({
@@ -28,6 +30,7 @@ const findOne = async (req, res) => {
   }
 };
 
+// Post/Create New Inventory
 const add = async (req, res) => {
   if (
     !req.body.warehouse_id ||
@@ -56,7 +59,6 @@ const add = async (req, res) => {
 
   try {
     const result = await knex("inventories").insert(req.body);
-
     const newInventoryId = result[0]; //get the id of the inventory item we just created
     const createdInventory = await knex("inventories")
       .where({
@@ -71,15 +73,25 @@ const add = async (req, res) => {
   }
 };
 
+//Put/Edit Inventory
 const update = async (req, res) => {
   if (
     !req.body.warehouse_id ||
     !req.body.item_name ||
     !req.body.description ||
     !req.body.category ||
-    !req.body.status ||
-    !req.body.quantity
+    !req.body.status
+    // !req.body.quantity
   ) {
+    console.log("Missing info: ", {
+      warehouse_id: req.body.warehouse_id,
+      item_name: req.body.item_name,
+      description: req.body.description,
+      category: req.body.category,
+      status: req.body.status,
+      quantity: req.body.quantity,
+    });
+
     return res.status(400).json({
       message: `Please provide all information for the inventory in the request`,
     });
@@ -92,11 +104,6 @@ const update = async (req, res) => {
     .first();
   if (!existingWarehouse) {
     return res.status(400).send(`Warehouse ${warehouse_id} not found.`);
-  }
-
-  //error code - if quantity is not a number
-  if (isNaN(req.body.quantity)) {
-    return res.status(400).send("Invalid. Quantity must be a number.");
   }
 
   try {
@@ -120,6 +127,7 @@ const update = async (req, res) => {
   }
 };
 
+// Delete Inventory
 const remove = async (req, res) => {
   try {
     const inventoryDeleted = await knex("inventories")
